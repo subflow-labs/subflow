@@ -1,0 +1,33 @@
+#main_content
+{
+    display: none;
+    
+z-index: 2 !important;
+    background-image: url('pic1.jpg');
+}
+
+
+.the-content
+{
+    width: 100%;
+}
+
+.pricing-section
+{
+    background-color: white;
+    color: white;
+    padding: 10vh 4vw;
+}
+.pricing-section h1
+{
+    color: black !important;
+}
+
+.card
+{
+    color: black !important;
+    margin: 2vh 3vw !important;
+    text-align: center !important;
+    display: flex !important;
+    justify-content: center !important;
+}
