@@ -27,13 +27,23 @@ const BundlrContextProvider = ({ children }) => {
     const [bundlrInstance, setBundlrInstance] = useState();
     //const [balance, setBalance] = useState<string>('');
     const [balance, setBalance] = useState("");
+    
     useEffect(() => {
         if (bundlrInstance) {
             fetchBalance();
         }
     }, [bundlrInstance])
 
-    const initialiseBundlr = async () => {
+    /*
+    useEffect(async () => {
+        if (!bundlrInstance) {
+            await initializeBundlr();
+        } else {
+            fetchBalance();
+        }
+    }, [bundlrInstance])*/
+
+    const initializeBundlr = async () => {
         const provider = new providers.Web3Provider(window.ethereum);
         await provider._ready();
         const bundlr = new WebBundlr(
@@ -111,7 +121,7 @@ const BundlrContextProvider = ({ children }) => {
         }
     }
     return (
-        <BundlrContext.Provider value={{ initialiseBundlr, fundWallet, balance, uploadFile, bundlrInstance }}>
+        <BundlrContext.Provider value={{ initializeBundlr, fundWallet, balance, uploadFile, bundlrInstance }}>
             {children}
         </BundlrContext.Provider>
     )
