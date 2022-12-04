@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from 'react'
-import { Link } from 'react-router-dom';
+import { useState, useEffect, useRef, createContext, useContext } from 'react'
+import { Link, UNSAFE_RouteContext } from 'react-router-dom';
 import { useProvider, useSigner, useContract, useAccount } from 'wagmi'
 import { SUBFLOW_ABI, SUBFLOW_CONTRACT_ADDRESS } from '../../constants/index'
 import {useBundler } from "./../Bundlr/context.jsx";
@@ -54,9 +54,15 @@ const ServiceList = () => {
   const [services, setServices] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [searchResults, setSearchResults] = useState([]);
+  const [activeService, setActiveService] = useState("");
 
   const [imageURI, setImageURI] = useState("");
   const [serviceName, setServiceName] = useState("");
+
+  const object = {
+    activeService
+  };
+
 
   useEffect(() => {
     if (effect.current) {
@@ -154,6 +160,8 @@ const ServiceList = () => {
     } else {
       console.log("inner: true");
     }
+
+    return bundlr;
   }
 
   /*
@@ -169,7 +177,7 @@ const ServiceList = () => {
     }
   }*/
 
-  const uploadFile = async (file) => {
+  const uploadFile = async (bundlr, file) => {
     try {
       let tx = await bundlr.uploader.upload(file, [{ name: "Content-type", value: "image/png" }])
       return tx;
@@ -195,9 +203,9 @@ const ServiceList = () => {
     }
   }
 
-  async function fundWallet(fundBundlr, amount) {
+  async function fundWallet(bundlr, amount) {
     try {
-        if (fundBundlr) {
+        if (bundlr) {
             if (!amount) return
             const amountParsed = parseInput(amount)
             if (amountParsed) {
@@ -205,7 +213,7 @@ const ServiceList = () => {
                     title: "Adding funds please wait",
                     status: "loading"
                 })
-                let response = await fundBundlr.fund(amountParsed)
+                let response = await bundlr.fund(amountParsed)
                 console.log('Wallet funded: ', response)
                 toast({
                     title: "Funds added",
@@ -223,7 +231,7 @@ const ServiceList = () => {
     }
   }
 
-  const fetchBalance = async () => {
+  const fetchBalance = async (bundlr) => {
     if (bundlr) {
         const bal = await bundlr.getLoadedBalance();
         console.log("bal: ", utils.formatEther(bal.toString()));
@@ -231,7 +239,7 @@ const ServiceList = () => {
     }
   }
 
-  const uploadImageToArweave = async() => {
+  const uploadImageToArweave = async(bundlr) => {
     try {
       console.log("Initializing bundlr!");
 
@@ -336,25 +344,98 @@ const ServiceList = () => {
     }
   }
 
-  const searchByAddress = () => {
+  const searchByAddress = async () => {
     console.log("Searching by address");
-    let results = [];
+    let resultsArray = [];
 
-    // for(service of services && service.address == searchText) results.push(service);
-    // Querying from the blockchain is probably less cost-intensive
-    
-    setSearchResults(results);
+    try {
+      console.log("searchText: ", searchText);
+      const results = await subflow.getServiceByAddress(searchText);
+      console.log("Results: ", results);
+
+      for(const service of results) {
+        let mappedService = {
+          id: service.id.toNumber(),
+          ownerAddress: service.owner,
+          name: service.name,
+          serviceAddress: service.service,
+          //imageUri: service.uri,
+          imageLink: `http://arweave.net/${service.uri}`
+        };
+
+        resultsArray.push(mappedService);
+      }
+
+      setSearchResults(resultsArray);
+      setServices(resultsArray);
+    } catch(error) {
+      toast.error(error.message);
+      console.log("failed getting by address: ", error.message);
+    }
   }
 
-  const searchByName = () => {
+  const searchByName = async () => {
     console.log("Searching by name");
-    let results = [];
+    let resultsArray = [];
 
-    //
+    try {
+      console.log("searchText: ", searchText);
+      const results = await subflow.getServiceByName(searchText);
+      console.log("Results: ", results);
+
+      for(const service of results) {
+        let mappedService = {
+          id: service.id.toNumber(),
+          ownerAddress: service.owner,
+          name: service.name,
+          serviceAddress: service.service,
+          //imageUri: service.uri,
+          imageLink: `http://arweave.net/${service.uri}`
+        };
+
+        resultsArray.push(mappedService);
+      }
+
+      setSearchResults(resultsArray);
+      setServices(resultsArray);
+    } catch(error) {
+      toast.error(error.message);
+      console.log("Failed getting by name: ", error.message);
+    }
   }
 
-  const searchByCreator = () => {
+  const searchByCreator = async () => {
     console.log("Searching by creator");
+    let resultsArray = [];
+
+    try {
+      console.log("searchText: ", searchText);
+      const results = await subflow.getOwnerCreatedServices(searchText);
+      console.log("Results: ", results);
+
+      for(const service of results) {
+        let mappedService = {
+          id: service.id.toNumber(),
+          ownerAddress: service.owner,
+          name: service.name,
+          serviceAddress: service.service,
+          //imageUri: service.uri,
+          imageLink: `http://arweave.net/${service.uri}`
+        };
+
+        resultsArray.push(mappedService);
+      }
+
+      setSearchResults(resultsArray);
+      setServices(resultsArray);
+    } catch(error) {
+      toast.error(error.message);
+      console.log("Failed getting by owner: ", error.message);
+    }
+  }
+
+  const onViewPlan = (service) => {
+    setActiveService(service);
   }
 
   const testServices = [
@@ -509,7 +590,11 @@ const ServiceList = () => {
                 <img className="card-img-top text-center center m-auto" style={{width: "30vw", height: "30vh"}} src="https://cdn.cdnlogo.com/logos/s/47/spotify.svg" alt="Card image" />
                 <div className="card-img-overlay">
                   <h4 className="card-title fw-bold h4 text-underline">{service.creator}</h4>
-                  <Link to="/plans" style={{marginTop: "40vh"}} className="text-center bttn blue-button-border">View Plan</Link>
+                  <Link 
+                    to={{pathname: `/plans/${service.serviceAddress}`}}
+                    state={{ service: service }} style={{marginTop: "40vh"}} className="text-center bttn blue-button-border">
+                    View Plans
+                  </Link>
                 </div>
             </div> 
 
@@ -543,4 +628,4 @@ const ServiceList = () => {
   )
 }
 
-export default ServiceList
+export default ServiceList;
