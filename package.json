@@ -5,6 +5,7 @@
     "dependencies": {
         "@alch/alchemy-sdk": "^1.0.8",
         "@alch/alchemy-web3": "^1.4.4",
+        "@bundlr-network/client": "^0.9.7",
         "@chakra-ui/react": "^2.4.2",
         "@emotion/react": "^11.10.5",
         "@emotion/styled": "^11.10.5",
@@ -24,6 +25,7 @@
         "fs": "^0.0.1-security",
         "ipfs-http-client": "^57.0.3",
         "nft.storage": "^7.0.0",
+        "npm": "^9.1.3",
         "path-browserify": "^1.0.1",
         "react": "^18.2.0",
         "react-custom-radio-buttons-group": "^1.0.5",
