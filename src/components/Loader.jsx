@@ -1,6 +1,6 @@
 import React from 'react'
-import styled from 'styled-components'
-import './css/Loader.css'
+import styled from 'styled-components';
+import './../style/Loader.css';
 
 export default function Loader() 
 {
