@@ -6,30 +6,30 @@ body
 }
 .blue-button
 {
-    background-color: #7b3fe4;
-    color: white;
-    padding: 1.5vh 2vw;
-    transition: .4s;
-    -webkit-transition: .4s;
+    background-color: #7b3fe4 !important;
+    color: white !important;
+    padding: 1.5vh 2vw !important;
+    transition: .4s !important;
+    -webkit-transition: .4s !important;
 }
 .blue-button:hover
 {
-    color: #7b3fe4;
-    background-color: white;
+    color: #7b3fe4 !important;
+    background-color: white !important;
 }
 .blue-button-border
 {
-    background-color: #7b3fe4;
-    color: white;
-    padding: 1.5vh 2vw;
-    transition: .4s;
-    -webkit-transition: .4s;
+    background-color: #7b3fe4 !important;
+    color: white !important;
+    padding: 1.5vh 2vw !important;
+    transition: .4s !important;
+    -webkit-transition: .4s !important;
 }
 .blue-button-border:hover
 {
-    color: #7b3fe4;
-    background-color: white;
-    border: 2px solid black;
+    color: #7b3fe4 !important;
+    background-color: white !important;
+    border: 2px solid black !important;
 }
 .fader
 {
@@ -51,7 +51,8 @@ body
 
 .link-on-whitebg
 {
-    color: black;
+    color: #b3b3b38a;
+    
     transition: .1s;
     -webkit-transition:.1s;
     border-bottom: 2px solid #7b3fe4;

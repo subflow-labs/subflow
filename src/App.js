@@ -6,6 +6,7 @@ import Services from './components/Services/Services'
 import Profile from './components/Profile';
 import NotFound from './components/NotFound';
 import Plans from './components/Plans';
+import UserPlans from './components/UserPlans';
 
 //olaj
 import './App.css'
@@ -25,7 +26,6 @@ import {
 } from 'wagmi';
 import { alchemyProvider } from 'wagmi/providers/alchemy';
 import { publicProvider } from 'wagmi/providers/public';
-import BundlrContextProvider from './components/Bundlr/context';
 
 // Set-up accepted chains and providers 
 const { chains, provider } = configureChains([chain.polygon, chain.polygonMumbai],
@@ -40,33 +40,6 @@ const { connectors } = getDefaultWallets({ appName: "FreeChain", chains });
 const wagmiClient = createClient({ autoConnect: true, connectors, provider });
 
 
-function App() {
-  return (
-    <WagmiConfig client={wagmiClient}>
-      <RainbowKitProvider chains={chains} theme={lightTheme({accentColor: '#7b3fe4',
-          accentColorForeground: 'white', borderRadius: 'medium', fontStack: 'system',})}>
-        <BundlrContextProvider>
-          
-        <Router>
-        <div className='font-mod flex flex-col relative overflow-x-hidden dark:bg-[#202020] transition-all duration-300 ease-in-out'>
-          <div><Toaster position="bottom-right" reverseOrder={false} /></div>
-          <Routes>
-            <Route path='/' element={<Home />}></Route>
-            <Route path='/profile' element={<Profile />}></Route>
-            <Route path='/*' element={<NotFound />}></Route>
-            <Route path='/services' element={<Services />}></Route>
-            <Route path='/plans' element={<Plans />}></Route>
-          </Routes>
-        </div>
-      </Router>
-
-        </BundlrContextProvider>
-      </RainbowKitProvider>
-    </WagmiConfig>
-  );
-}
-
-/*
 function App() {
   return (
     <WagmiConfig client={wagmiClient}>
@@ -92,14 +65,17 @@ function App() {
               <Route path='/*' element={<NotFound />}></Route>
               <Route path='/services' element={<Services />}></Route>
               <Route path='/plans' element={<Plans />}></Route>
+              <Route path='/your_plans' element={<UserPlans />}></Route>
               
             </Routes>
           </div>
+         
         </Router>
+        
       </RainbowKitProvider>
     </WagmiConfig>
   );
-}*/
+}
 
 export default App;
 
