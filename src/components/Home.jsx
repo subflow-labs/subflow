@@ -3,7 +3,7 @@ import {Link} from 'react-router-dom'
 import Footer from './Footer';
 import Loader from './Loader';
 import Navbar from './Navbar';
-import './css/Home.css'
+import './../style/Home.css';
 import {Helmet} from "react-helmet";
 
 
@@ -44,17 +44,17 @@ function Home()
               <div className="sm:text-center the-content">
                         <h1 className="text-2xl tracking-tight font-bold text-slate-800 dark:text-gray-200 sm:text-3xl md:text-4xl lg:text-5xl">
                           <span className="inline">
-                            <span className=" text-indigo-600 inline">SubFlow is a platform that,
+                            <span className=" text-indigo-600 inline">SubFlow is 
                             </span>{" "}
-                            lets third-party services
+                            Polygon's first 
                           </span>{' '}
-                          <span className=" text-indigo-600 inline">manage their subscriptions in a </span>{" "}
+                          <span className=" text-indigo-600 inline">third-party</span>{" "}
                           <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-teal-400">
-                            blockchain-centric way.
+                            subscription model.
                           </span>
                         </h1>
                         <p className="hidden sm:block mt-3 text-xs sm:text-sm text-gray-800 dark:text-gray-200 sm:mt-5 sm:max-w-xl mx-auto md:mt-5">
-                            Subflow severely limits the the amount of work the third-party service would need to implement to integrate a web3 subscriptions model and exposes the same functionality to them at a few clicks on our website and a function call in their code.                       
+                            Subflow exposes an Api for individual platforms to manage their subscriptions in a blockchain-centric way.                       
                         </p>
                         <p className='sm:hidden text-xs text-gray-800 dark:text-gray-200 pt-4'>Subflow severely limits the the amount of work the third-party service would need to implement.</p>
 

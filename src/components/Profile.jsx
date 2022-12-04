@@ -6,7 +6,8 @@ import {Helmet} from "react-helmet";
 
 import {SUBFLOW_ABI, SUBFLOW_CONTRACT_ADDRESS} from '../constants/index';
 
-import './css/Profile.css'
+//import './css/Profile.css'
+import "./../style/Profile.css";
 import Navbar from './Navbar'
 import Footer from './Footer'
 

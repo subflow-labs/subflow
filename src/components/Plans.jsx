@@ -1,13 +1,17 @@
-import React, {useEffect, useState} from 'react'
-import {Link} from 'react-router-dom'
-import AOS from "aos";
+import React, {useEffect, useState, useRef} from 'react'
+//import {Link} from 'react-router-dom'
+//import AOS from "aos";
 import "aos/dist/aos.css";
 import Navbar from "./Navbar";
 //import Conclusion from "./../Conclusion/Conclusion";
 import Footer from "./Footer";
 import {Helmet} from "react-helmet";
 
-import styled from 'styled-components'
+import styled from 'styled-components';
+
+import { useProvider, useSigner, useContract } from 'wagmi';
+import { SUBFLOW_ABI, SUBFLOW_CONTRACT_ADDRESS } from './../constants/index.js';
+import toast from 'react-hot-toast';
 
 const Container = styled.section`
   margin-top: 20vh;
@@ -85,14 +89,59 @@ const Container = styled.section`
 const handleChange = (e)=>{
     
 }
+
 export default function Plans() 
 {
+  const effect = useRef(true);
+  const provider = useProvider();
+  const signer = useSigner();
+
+  const Subflow = useContract({
+    addressOrName: SUBFLOW_CONTRACT_ADDRESS,
+    contractInterface: SUBFLOW_ABI,
+    signerOrProvider: signer.data || provider,
+  });
+
   const [plans, setPlans] = useState([]);
 
+  /*
   useEffect(() => 
   {
     AOS.init();
-  }, []);
+  }, []);*/
+
+  useEffect(() => {
+    if (effect.current) {
+      effect.current = false;
+      const fetch = async () => {
+        try {
+          console.log("fetching plans");
+          const plansArray = [];
+
+          const results = await Subflow.getPlans();
+          console.log(results);
+
+          for (const plan of results) {
+            let mappedPlan = {
+              price: plan.amount,
+              interval: plan.interval
+            };
+
+            plansArray.push(mappedPlan);
+          }
+          setPlans(plansArray);
+        } catch(error){
+          toast.error(error.message);
+        }
+      }
+      fetch();
+    }
+  }, [Subflow]);
+
+
+  const suscribe = (serviceId) => {
+
+  } 
   
 
   const testPlans = [
