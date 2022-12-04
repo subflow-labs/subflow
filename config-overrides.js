@@ -13,7 +13,8 @@ module.exports = function override(config) {
     "url": require.resolve("url"),
     "buffer": require.resolve("buffer"),
     "zlib": require.resolve("browserify-zlib"),
-    "path": require.resolve("path-browserify") 
+    "path": require.resolve("path-browserify"),
+    "fs": false, 
     }) 
  config.resolve.fallback = fallback;
  config.resolve.extensions = [...config.resolve.extensions, ".ts", ".js"] 
