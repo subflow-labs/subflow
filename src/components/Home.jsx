@@ -3,7 +3,6 @@ import {Link} from 'react-router-dom'
 import Footer from './Footer';
 import Loader from './Loader';
 import Navbar from './Navbar';
-import './../style/Home.css';
 import {Helmet} from "react-helmet";
 
 
@@ -41,7 +40,7 @@ function Home()
       <div id='main_content' className='fader'>
         <Navbar />
         <main style={{height: "100vh"}} className=" flex items-center w-[90vw] mx-auto h-[88vh] max-w-7xl px-4 sm:px-6 lg:px-8">
-              <div className="sm:text-center the-content">
+        <div data-aos-easing="linear" data-aos-duration="800" data-aos="fade-up" className="sm:text-center the-content">
                         <h1 className="text-2xl tracking-tight font-bold text-slate-800 dark:text-gray-200 sm:text-3xl md:text-4xl lg:text-5xl">
                           <span className="inline">
                             <span className=" text-indigo-600 inline">SubFlow is 

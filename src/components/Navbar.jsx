@@ -2,8 +2,6 @@ import { Fragment } from "react";
 import { Popover, Transition } from "@headlessui/react";
 import { Link, NavLink } from "react-router-dom";
 import DarkMode from "../utils/DarkMode";
-//import './css/Navbar.css'
-import "./../style/Navbar.css";
 
 import {
   MenuIcon,
@@ -18,7 +16,6 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
-
 
 export default function Navbar() 
 {
@@ -73,11 +70,11 @@ export default function Navbar()
               Services
             </NavLink>
             
-            <NavLink exact="true" to="/creators">
-              Creators
+            <NavLink exact="true" to="/profile">
+              Profile
             </NavLink>
 
-            <NavLink exact="true" to="/docs">
+            <NavLink exact="true" to="https://github.com/subflow-labs/subflow_frontend#readme">
               Documentation
             </NavLink>
             
