@@ -4,15 +4,6 @@ import BigNumber from 'bignumber.js';
 import { providers, utils } from 'ethers';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
-/*
-export interface IBundlrHook {
-    initialiseBundlr: () => Promise<void>;
-    fundWallet: (_: number) => void;
-    balance: string;
-    uploadFile: (file: Buffer) => Promise<any>;
-    bundlrInstance: WebBundlr;
-}*/
-
 const BundlrContext = createContext({
     initialiseBundlr: async () => { },
     fundWallet: (_) => { },
