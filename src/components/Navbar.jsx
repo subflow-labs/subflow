@@ -2,7 +2,8 @@ import { Fragment } from "react";
 import { Popover, Transition } from "@headlessui/react";
 import { Link, NavLink } from "react-router-dom";
 import DarkMode from "../utils/DarkMode";
-import './css/Navbar.css'
+//import './css/Navbar.css'
+import "./../style/Navbar.css";
 
 import {
   MenuIcon,
