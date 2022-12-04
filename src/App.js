@@ -64,7 +64,7 @@ function App() {
               <Route path='/profile' element={<Profile />}></Route>
               <Route path='/*' element={<NotFound />}></Route>
               <Route path='/services' element={<Services />}></Route>
-              <Route path='/plans' element={<Plans />}></Route>
+              <Route path='/plans/:service' element={<Plans />}></Route>
               <Route path='/your_plans' element={<UserPlans />}></Route>
               
             </Routes>
