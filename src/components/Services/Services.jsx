@@ -4,6 +4,7 @@ import { useAccount } from 'wagmi'
 import Navbar from '../Navbar'
 import Footer from '../Footer'
 import {Helmet} from "react-helmet";
+import "./../css/Services.css"
 
 
 function Services() {

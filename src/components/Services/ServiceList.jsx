@@ -1,23 +1,29 @@
-import { useState, useEffect, useRef, createContext, useContext } from 'react'
-import { Link, UNSAFE_RouteContext } from 'react-router-dom';
+import { useState, useEffect, useRef } from 'react'
+import { Link } from 'react-router-dom';
 import { useProvider, useSigner, useContract, useAccount } from 'wagmi'
 import { SUBFLOW_ABI, SUBFLOW_CONTRACT_ADDRESS } from '../../constants/index'
-import {useBundler } from "./../Bundlr/context.jsx";
+//import {useBundler } from "./../Bundlr/context.jsx";
 import toast from 'react-hot-toast';
-import { ArrowNarrowRightIcon } from '@heroicons/react/outline'
-
+//import { ArrowNarrowRightIcon } from '@heroicons/react/outline'
+import {CopyToClipboard} from 'react-copy-to-clipboard';
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import TextField from '@mui/material/TextField';
+import Snackbar from '@mui/material/Snackbar';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
 
-import { providers, utils } from "ethers";
-import { Bundlr, WebBundlr } from "@bundlr-network/client";
+import { shortenAddress } from './../../utils/shortenAddress.js';
+
+import { ethers, utils } from "ethers";
+//import { WebBundlr } from "@bundlr-network/client";
+//import { Bundlr } from "@bundlr-network/client";
+//import { NodeBundlr } from "@bundlr-network/client";
 import { BigNumber } from "bignumber.js";
-import { readFileSync } from 'fs';
-import { shortenAddress } from "./../../utils/shortenAddress.js"; 
+//import { readFileSync } from 'fs'; 
 
 const style = {
   position: 'absolute',
@@ -35,9 +41,9 @@ const ServiceList = () => {
   //const
   const hiddenFileInput = useRef(null);
   const effect = useRef(true);
-  const {address, isConnected} = useAccount();
-  const [bundlr, setBundlr] = useState();
-  const [bundlrBalance, setBundlrBalance] = useState(3);
+  const {address} = useAccount();
+  //const [bundlr, setBundlr] = useState();
+  //const [bundlrBalance, setBundlrBalance] = useState(3);
 
   const provider = useProvider();
   const signer = useSigner();
@@ -48,20 +54,76 @@ const ServiceList = () => {
     signerOrProvider: signer.data || provider,
   });
 
-  const [image, setImage] = useState();
-  const [imageFile, setImageFile] = useState();
+  //const [image, setImage] = useState();
+  //const [imageFile, setImageFile] = useState();
 
   const [services, setServices] = useState([]);
-  const [searchText, setSearchText] = useState("");
-  const [searchResults, setSearchResults] = useState([]);
-  const [activeService, setActiveService] = useState("");
+  const [servicesRetrieved, setServicesRetrieved] = useState(false);
+  //const [searchText, setSearchText] = useState("");
+  //const [searchResults, setSearchResults] = useState([]);
+  //const [activeService, setActiveService] = useState("");
 
-  const [imageURI, setImageURI] = useState("");
+  //const [imageURI, setImageURI] = useState("");
   const [serviceName, setServiceName] = useState("");
 
-  const object = {
-    activeService
-  };
+  const [bundlrInstance, setBundlrInstance] = useState();
+  const [bundlrBalance, setBundlrBalance] = useState();
+  const [image, setImage] = useState();
+  const [imageBuffer, setImageBuffer] = useState();
+  const [imageURI, setImageURI] = useState('');
+  const [currency, setCurrency] = useState('matic');
+  const [uploadCost, setUploadCost] = useState();
+  const bundlrRef = useRef();
+
+  const [searchText, setSearchText] = useState("");
+  const [searchResults, setSearchResults] = useState("");
+  const [searchActive, setSearchActive] = useState(false);
+
+  /*
+  const initializeBundlr = async() => {
+    console.log("initializing bundlr...");
+    
+    const bundlr = new WebBundlr(
+      "https://devnet.bundlr.network",
+      "matic",
+      provider,
+    );
+    const bundlr = new WebBundlr(
+      "https://devnet.bundlr.network",
+      "matic",
+      signer.data,
+    );
+    await bundlr.ready();
+    console.log("bundlr: ", bundlr);
+
+    setBundlrInstance(bundlr);
+    bundlrRef.current = bundlr;
+    await fetchBalance();
+  } 
+
+  const fetchBundlrBalance = async () => {
+    console.log("Fetching balance...");
+    const bal = await bundlrRef.current.getLoadedBalance();
+    console.log("balance: ", ethers.utils.formatEther(bal.toString()));
+    setBundlrBalance(bal);
+  }
+
+  const checkUploadCost = async (bytes) => {
+    console.log("Checking upload cost...");
+    if (bytes) {
+      const cost = await bundlrInstance.getPrice(bytes);
+      console.log("Cost: ", cost);
+      setUploadCost(cost);
+    } else {
+      console.log("No bytes, couldn't get and set upload cost");
+    }
+  }*/
+
+/*
+  const uploadImageToArweave = async () => {
+
+  }*/
+
 
 
   useEffect(() => {
@@ -79,7 +141,7 @@ const ServiceList = () => {
           for(const service of results) {
             let mappedService = {
               id: service.id.toNumber(),
-              ownerAddress: service.owner,
+              creatorAddress: service.owner,
               name: service.name,
               serviceAddress: service.service,
               //imageUri: service.uri,
@@ -89,6 +151,8 @@ const ServiceList = () => {
             servicesArray.push(mappedService);
           }
           setServices(servicesArray);
+          setServicesRetrieved(true);
+          setSearchActive(false);
         } catch (error) {
           console.log(error.message);
           toast.error(error.message);
@@ -98,26 +162,8 @@ const ServiceList = () => {
     }
   }, [subflow]);
 
-  function copyServiceAddress()
-  {
-    var element = document.getElementById("copy_service_icon");
-    element.style.display = "block"
 
-    setTimeout(() => {
-      element.style.display = "block"
-    }, 2500);
-  }
-
-  function copyCreatorAddress()
-  {
-    var element = document.getElementById("copy_creator_icon");
-    element.style.display = "block"
-
-    setTimeout(() => {
-      element.style.display = "block"
-    }, 2500);
-  }
-
+  /*
   const onFileChange = (e) => {
     const file = e.target.files[0]
     if (file) {
@@ -131,15 +177,16 @@ const ServiceList = () => {
         }
         reader.readAsArrayBuffer(file)
     }
-  }
+  }*/
 
   const handleChange = (e) => {
     console.log(e.target.files);
-    setImageFile(URL.createObjectURL(e.target.files[0]));
+    //setImageFile(URL.createObjectURL(e.target.files[0]));
     alert("Image uploaded!");
     console.log("Image uploaded!");
   }
 
+  /*
   const initializeBundlr = async () => {
     const provider = new providers.Web3Provider(window.ethereum);
     await provider._ready();
@@ -162,7 +209,7 @@ const ServiceList = () => {
     }
 
     return bundlr;
-  }
+  }*/
 
   /*
   async function uploadFile(file) {
@@ -177,6 +224,7 @@ const ServiceList = () => {
     }
   }*/
 
+  /*
   const uploadFile = async (bundlr, file) => {
     try {
       let tx = await bundlr.uploader.upload(file, [{ name: "Content-type", value: "image/png" }])
@@ -187,9 +235,9 @@ const ServiceList = () => {
           status: "error"
       })
     }
-  }
+  }*/
 
-  function parseInput(input) {
+  function parseInput(bundlr, input) {
     const conv = new BigNumber(input).multipliedBy(bundlr.currencyConfig.base[1])
     if (conv.isLessThan(1)) {
         console.log('error: value too small');
@@ -203,6 +251,7 @@ const ServiceList = () => {
     }
   }
 
+  /*
   async function fundWallet(bundlr, amount) {
     try {
         if (bundlr) {
@@ -229,16 +278,17 @@ const ServiceList = () => {
             status: "error"
         })
     }
-  }
+  }*/
 
   const fetchBalance = async (bundlr) => {
     if (bundlr) {
         const bal = await bundlr.getLoadedBalance();
         console.log("bal: ", utils.formatEther(bal.toString()));
-        setBundlrBalance(utils.formatEther(bal.toString()));
+        //setBundlrBalance(utils.formatEther(bal.toString()));
     }
   }
 
+  /*
   const uploadImageToArweave = async(bundlr) => {
     try {
       console.log("Initializing bundlr!");
@@ -289,7 +339,7 @@ const ServiceList = () => {
       const decimalBalance = bundlr.utils.unitConverter(loadedBalance);
       let formattedDecimalBalance = utils.formatEther(decimalBalance.toString());
       console.log("decimalBalance: ", formattedDecimalBalance);
-      setBundlrBalance(formattedDecimalBalance);
+      //setBundlrBalance(formattedDecimalBalance);
       console.log("bundlrBalance: ",  bundlrBalance);
 
       const notLoaded = await bundlr.getBalance(bundlr.address);
@@ -322,7 +372,7 @@ const ServiceList = () => {
     } catch(error) {
       toast.error(error.message);
     }
-  }
+  }*/
 
   const createNewService = async (e) => {
     e.preventDefault();
@@ -335,7 +385,7 @@ const ServiceList = () => {
       console.log("creating new service");
       console.log("serviceName: ", serviceName);
       //console.log("imageURI: ", imageURI);
-      let randomUri = "rofjfkflfsssaaaaaaaaaaaaaaaaaaaaaajsjjsjjs";
+      let randomUri = "placeholder URI";
       const txResponse = await subflow.createService(serviceName, randomUri);
       await txResponse.wait();
       console.log("done creating service");
@@ -344,6 +394,20 @@ const ServiceList = () => {
     }
   }
 
+  const findService = async () => {
+    console.log("Searching for service");
+    await searchByName();
+    try {
+      await searchByAddress();
+      await searchByCreator();
+    } catch(error) {
+      console.log("search text might not be a valid address || ", error.message);
+    }
+
+    setSearchActive(true);
+    setServices(searchResults);
+  }
+  
   const searchByAddress = async () => {
     console.log("Searching by address");
     let resultsArray = [];
@@ -356,7 +420,7 @@ const ServiceList = () => {
       for(const service of results) {
         let mappedService = {
           id: service.id.toNumber(),
-          ownerAddress: service.owner,
+          creatorAddress: service.owner,
           name: service.name,
           serviceAddress: service.service,
           //imageUri: service.uri,
@@ -366,14 +430,16 @@ const ServiceList = () => {
         resultsArray.push(mappedService);
       }
 
-      setSearchResults(resultsArray);
-      setServices(resultsArray);
+      let newResults = searchResults.concat(resultsArray);
+      setSearchResults(newResults);
+      //setServices(resultsArray);
     } catch(error) {
       toast.error(error.message);
       console.log("failed getting by address: ", error.message);
     }
   }
 
+  
   const searchByName = async () => {
     console.log("Searching by name");
     let resultsArray = [];
@@ -386,7 +452,7 @@ const ServiceList = () => {
       for(const service of results) {
         let mappedService = {
           id: service.id.toNumber(),
-          ownerAddress: service.owner,
+          creatorAddress: service.owner,
           name: service.name,
           serviceAddress: service.service,
           //imageUri: service.uri,
@@ -396,8 +462,8 @@ const ServiceList = () => {
         resultsArray.push(mappedService);
       }
 
-      setSearchResults(resultsArray);
-      setServices(resultsArray);
+      let newResults = searchResults.concat(resultsArray);
+      setSearchResults(newResults);
     } catch(error) {
       toast.error(error.message);
       console.log("Failed getting by name: ", error.message);
@@ -416,7 +482,7 @@ const ServiceList = () => {
       for(const service of results) {
         let mappedService = {
           id: service.id.toNumber(),
-          ownerAddress: service.owner,
+          creatorAddress: service.owner,
           name: service.name,
           serviceAddress: service.service,
           //imageUri: service.uri,
@@ -426,56 +492,57 @@ const ServiceList = () => {
         resultsArray.push(mappedService);
       }
 
-      setSearchResults(resultsArray);
-      setServices(resultsArray);
+      let newResults = searchResults.concat(resultsArray);
+      setSearchResults(newResults);
     } catch(error) {
       toast.error(error.message);
       console.log("Failed getting by owner: ", error.message);
     }
   }
 
+  /*
   const onViewPlan = (service) => {
     setActiveService(service);
-  }
+  }*/
 
+  
   const testServices = [
     {
         id: 1,
-        addr: "weg3873hnce983hefn93e33c",
-        creator: "Spotify"
+        serviceAddress: "weg3873hnce983hefn93e33c",
+        creatorAddress: "weg3873hnce983hefn93e33c"
     },
     {
         id: 2,
-        addr: "weg3873hnce983hefn93e33c",
-        creator: "Netflix"
+        serviceAddress: "weg3873hnce983hefn93e33c",
+        creatorAddress: "weg3873hnce983hefn93e33c"
     },
     {
       id: 3,
-      addr: "weg3reo803nc83c33749",
-      creator: "Amazon Prime"
+      serviceAddress: "weg3reo803nc83c33749",
+      creatorAddress: "weg3873hnce983hefn93e33c"
     },
     {
       id: 3,
-      addr: "weg3reo803nc83c33749",
-      creator: "Amazon Prime"
+      serviceAddress: "weg3reo803nc83c33749",
+      creatorAddress: "weg3873hnce983hefn93e33c"
     },
     {
       id: 3,
-      addr: "weg3reo803nc83c33749",
-      creator: "Amazon Prime"
+      serviceAddress: "weg3reo803nc83c33749",
+      creatorAddress: "weg3873hnce983hefn93e33c"
     },
     {
       id: 3,
-      addr: "weg3reo803nc83c33749",
-      creator: "Amazon Prime"
+      serviceAddress: "weg3reo803nc83c33749",
+      creatorAddress: "weg3873hnce983hefn93e33c"
     },
     {
       id: 3,
-      addr: "weg3reo803nc83c33749",
-      creator: "Amazon Prime"
+      serviceAddress: "weg3reo803nc83c33749",
+      creatorAddress: "weg3873hnce983hefn93e33c"
     },
   ];
-
   function copyServiceAddress()
   {
     var element = document.getElementById("copy_service_icon");
@@ -500,12 +567,41 @@ const ServiceList = () => {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
+  /**for react-copy-clipboard */
+  //for address
+  const [copiedService, setCopiedService] = useState(false);
+
+  //for creator
+  const [copiedCreator, setCopiedCreator] = useState(false);
+  /**end */
+
+  const [copiedName, setCopiedName] = useState(false);
+
   return (
+  
     <div className='fader'>
      
-      <div className='min-h-screen transition-all duration-300 ease-in w-[90vw] mx-auto pt-4 pb-8'>   
-    
-        <h1 className="text-indigo-700 dark:text-indigo-500 text-center font-semibold mt-8 text-2xl sm:text-3xl md:text-4xl trans">
+      <div className='min-h-screen transition-all duration-300 ease-in w-[90vw] mx-auto pt-4 pb-8'>  
+
+      {
+        !servicesRetrieved ? (
+          <>
+          <h1 className="text-indigo-700 dark:text-indigo-500 text-center font-semibold mt-8 text-2xl sm:text-3xl md:text-4xl trans" style={{animation: "pulse 5s infinite"}}>
+          Fetching all services on Subflow...
+          </h1>
+          <p className='text-center text-xs sm:text-sm text-gray-500 dark:text-gray-400 pt-2'>
+          Kindly hold on a second
+        </p>
+        </>
+
+        ) : servicesRetrieved && services < 1 ? (
+          <h1 className="text-indigo-700 dark:text-indigo-500 text-center font-semibold mt-8 text-2xl sm:text-3xl md:text-4xl trans">
+          No services available on Subflow.
+        </h1>
+
+        ) : (
+          <>
+          <h1 className="text-indigo-700 dark:text-indigo-500 text-center font-semibold mt-8 text-2xl sm:text-3xl md:text-4xl trans">
           All services available on Subflow.
         </h1>
  
@@ -559,8 +655,7 @@ const ServiceList = () => {
                       <Button
                         type="submit"
                         className="bttn blue-button d-flex justify-content-center align-items-center" 
-                        onClick={createNewService}
-                    >
+                        onClick={createNewService}>
                         Create
                     </Button>
                   </Box>
@@ -572,9 +667,10 @@ const ServiceList = () => {
           <div className='container'>
         <div style={{margin: "10vh 0 3vh"}} className='d-flex justify-content-around align-content-center'>
             <form  className = 'search-box' action="#" method="post">
-                <input className= "search-text" type="text" name="search_services" id="searchServices" placeholder='Search for services by address' />
+                <input className= "search-text" type="text" name="search_services" id="searchServices" placeholder='Search for services by address'
+                    value={searchText} onChange={(e) => setSearchText(e.target.value)} />
                 
-                <button type="submit" className="search-btn">
+                <button type="submit" className="search-btn" onClick={() => findService()}>
                   <svg stroke="#fff" fill="#fff" stroke-width="0" viewBox="0 0 24 24" height="2em" width="2em" xmlns="http://www.w3.org/2000/svg"><path fill="none" stroke="#fff" stroke-width="2" d="M15,15 L22,22 L15,15 Z M9.5,17 C13.6421356,17 17,13.6421356 17,9.5 C17,5.35786438 13.6421356,2 9.5,2 C5.35786438,2 2,5.35786438 2,9.5 C2,13.6421356 5.35786438,17 9.5,17 Z"></path></svg>
                 </button>
             </form>
@@ -587,41 +683,62 @@ const ServiceList = () => {
           {services.map((service) => (
             <div className='col-md-4 gap-2' style={{borderRight: "1px solid grey"}}>
             <div className="card img-fluid " style={{height: "50vh"}}>
-                <img className="card-img-top text-center center m-auto" style={{width: "30vw", height: "30vh"}} src="https://cdn.cdnlogo.com/logos/s/47/spotify.svg" alt="Card image" />
+                <img className="card-img-top text-center center m-auto" style={{width: "30vw", height: "30vh"}} src="https://raw.githubusercontent.com/0xcrust/Myself/main/Soltribe%201.png" alt="" />
                 <div className="card-img-overlay">
                   <h4 className="card-title fw-bold h4 text-underline">{service.creator}</h4>
                   <Link 
                     to={{pathname: `/plans/${service.serviceAddress}`}}
-                    state={{ service: service }} style={{marginTop: "40vh"}} className="text-center bttn blue-button-border">
+                    state={{ service: service }} 
+                    style={{marginTop: "40vh"}} className="text-center bttn blue-button-border">
                     View Plans
                   </Link>
                 </div>
             </div> 
 
             <div className='d-flex flex-column mt-5'>
+            <div className='d-flex align-items-center gap-3 text-center'>
+                <p className='fw-bold'>Name:</p>
+                <p className='fw-bold'>{service.name}</p>
+                <CopyToClipboard text={service.name}
+                  onCopy={() => setCopiedName(true)}>
+                    <button className='copy-icon'>
+                    <svg className='cursor-pointer' stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" height="1.5em" width="1.5em" xmlns="http://www.w3.org/2000/svg"><path d="M464 0H144c-26.51 0-48 21.49-48 48v48H48c-26.51 0-48 21.49-48 48v320c0 26.51 21.49 48 48 48h320c26.51 0 48-21.49 48-48v-48h48c26.51 0 48-21.49 48-48V48c0-26.51-21.49-48-48-48zM362 464H54a6 6 0 0 1-6-6V150a6 6 0 0 1 6-6h42v224c0 26.51 21.49 48 48 48h224v42a6 6 0 0 1-6 6zm96-96H150a6 6 0 0 1-6-6V54a6 6 0 0 1 6-6h308a6 6 0 0 1 6 6v308a6 6 0 0 1-6 6z"></path></svg>
+                    </button>
+
+                  </CopyToClipboard>
+                  {copiedName ? <span className='copy-icon-copied creator'>Copied Name</span> : null}
+              </div>
               <div className='d-flex align-items-center gap-3 text-center'>
                 <p className='fw-bold'>Address:</p>
                 <p className='fw-bold'>{shortenAddress(service.serviceAddress)}</p>
-                <button className='copy-icon' onClick={copyServiceAddress}>
+                <CopyToClipboard text={service.serviceAddress}
+                  onCopy={() => setCopiedService(true)}>
+                  <button className='copy-icon'>
                   <svg className='cursor-pointer' stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" height="1.5em" width="1.5em" xmlns="http://www.w3.org/2000/svg"><path d="M464 0H144c-26.51 0-48 21.49-48 48v48H48c-26.51 0-48 21.49-48 48v320c0 26.51 21.49 48 48 48h320c26.51 0 48-21.49 48-48v-48h48c26.51 0 48-21.49 48-48V48c0-26.51-21.49-48-48-48zM362 464H54a6 6 0 0 1-6-6V150a6 6 0 0 1 6-6h42v224c0 26.51 21.49 48 48 48h224v42a6 6 0 0 1-6 6zm96-96H150a6 6 0 0 1-6-6V54a6 6 0 0 1 6-6h308a6 6 0 0 1 6 6v308a6 6 0 0 1-6 6z"></path></svg>
                 </button>
-                <div className="copy-icon-copied address" id='copy_service_icon'>Copied Address</div>
+                </CopyToClipboard>
+                {copiedService ? <span className='copy-icon-copied address'>Copied Address</span> : null}
               </div>
               <div className='d-flex align-items-center gap-3 text-center'>
                 <p className='fw-bold'>Creator:</p>
-                <p className='fw-bold'>{shortenAddress(service.ownerAddress)}</p>
-                <button className='copy-icon' onClick={copyCreatorAddress}>
-                    <svg className='cursor-pointer ' stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" height="1.5em" width="1.5em" xmlns="http://www.w3.org/2000/svg"><path d="M464 0H144c-26.51 0-48 21.49-48 48v48H48c-26.51 0-48 21.49-48 48v320c0 26.51 21.49 48 48 48h320c26.51 0 48-21.49 48-48v-48h48c26.51 0 48-21.49 48-48V48c0-26.51-21.49-48-48-48zM362 464H54a6 6 0 0 1-6-6V150a6 6 0 0 1 6-6h42v224c0 26.51 21.49 48 48 48h224v42a6 6 0 0 1-6 6zm96-96H150a6 6 0 0 1-6-6V54a6 6 0 0 1 6-6h308a6 6 0 0 1 6 6v308a6 6 0 0 1-6 6z"></path></svg>
-                </button>
-                <div className="copy-icon-copied creator" id='copy_creator_icon'>Copied Creator</div>
+                <p className='fw-bold'>{shortenAddress(service.creatorAddress)}</p>
+                <CopyToClipboard text={service.creatorAddress}
+                  onCopy={() => setCopiedCreator(true)}>
+                    <button className='copy-icon'>
+                    <svg className='cursor-pointer' stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" height="1.5em" width="1.5em" xmlns="http://www.w3.org/2000/svg"><path d="M464 0H144c-26.51 0-48 21.49-48 48v48H48c-26.51 0-48 21.49-48 48v320c0 26.51 21.49 48 48 48h320c26.51 0 48-21.49 48-48v-48h48c26.51 0 48-21.49 48-48V48c0-26.51-21.49-48-48-48zM362 464H54a6 6 0 0 1-6-6V150a6 6 0 0 1 6-6h42v224c0 26.51 21.49 48 48 48h224v42a6 6 0 0 1-6 6zm96-96H150a6 6 0 0 1-6-6V54a6 6 0 0 1 6-6h308a6 6 0 0 1 6 6v308a6 6 0 0 1-6 6z"></path></svg>
+                    </button>
+
+                  </CopyToClipboard>
+                  {copiedCreator ? <span className='copy-icon-copied creator'>Copied Creator</span> : null}
               </div>
             </div>
           </div>
-          ))}
-               
+          ))}          
         </div>
-
       {/** end */}
+        </>
+        )
+      }
         
       </div>
     </div>
