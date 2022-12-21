@@ -1,7 +1,8 @@
 import { Fragment } from "react";
 import { Popover, Transition } from "@headlessui/react";
 import { Link, NavLink } from "react-router-dom";
-import DarkMode from "../utils/DarkMode";
+//import DarkMode from "../utils/DarkMode";
+//import "./css/Navbar.css"
 
 import {
   MenuIcon,
@@ -9,17 +10,18 @@ import {
   ViewGridIcon,
   ShoppingCartIcon,
   UserGroupIcon,
-  ChevronDownIcon,
+  //ChevronDownIcon,
 } from "@heroicons/react/outline";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 
+/*
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
-}
+}*/
 
 export default function Navbar() 
 {
-  const [colorScheme, setTheme] = DarkMode();
+  //const [colorScheme, setTheme] = DarkMode();
 
   //o-laj
     // When the user scrolls down 100px from the top of the document, show the button
@@ -37,8 +39,15 @@ export default function Navbar()
         nav.style.backgroundColor = "transparent";
       }
     }
-  //end of change nav bg
-//end olaj
+
+    const githubClick = () => {
+      //window.location="https://github.com/orgs/subflow-labs/repositories";
+      window.open("https://github.com/orgs/subflow-labs/repositories");
+    } 
+
+    const aboutClick = () => {
+      window.open("https://0xcrust.gitbook.io/subflow-a-third-party-subscription-service./");
+    } 
   
   return (
     <Popover className="relative bg-lg">
@@ -66,6 +75,10 @@ export default function Navbar()
             as="nav"
             className="hidden lg:flex items-center justify-center space-x-10 text-ld font-medium"
           >
+
+            <button onClick={aboutClick}>
+              About
+            </button>
             <NavLink exact="true" to="/services">
               Services
             </NavLink>
@@ -74,9 +87,9 @@ export default function Navbar()
               Profile
             </NavLink>
 
-            <NavLink exact="true" to="https://github.com/subflow-labs/subflow_frontend#readme">
-              Documentation
-            </NavLink>
+            <button onClick={githubClick}>
+              Github
+            </button>
             
           </Popover.Group>
 
