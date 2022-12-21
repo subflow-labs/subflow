@@ -1,0 +1,56 @@
+
+  .tab-content
+  {
+    color: white !important;
+    margin: 10vh 0;
+     width: 100%
+  }
+.tab-pane
+{
+  width: 100%
+}
+  .nav-link
+  {
+    color: white !important;
+    padding: 3vh 2vw;
+    font-size: large;
+    margin: 0 2vw;
+    border-radius: 20px;
+    background-color: #313131;
+  }
+
+  .nav-link:hover
+  {
+    color: white !important;
+    background-color: #7b3fe4;
+  }
+  .nav-link.active
+  {
+    color: white !important;
+    background-color: #7b3fe4;
+  }
+  .subscribe-form
+  {
+    padding: 2vh auto;
+  }
+  .subscribe-form input
+  {
+    margin: 2vh 0;
+    padding: 2vh 1vw;
+    border: 2px solid #7a7979;
+    border-radius: 20px;
+    color: black;
+  }
+  .subscribe-form input:hover,
+  .subscribe-form input:focus
+  {
+    border: 2px solid #1a1a1a;
+  }
+  .subscribe-form input::placeholder
+  {
+    color: black
+  }
+  .modal-backdrop
+  {
+    position: relative !important;
+  }
