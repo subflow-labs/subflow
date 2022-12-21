@@ -1,4 +1,4 @@
-export const SUBFLOW_CONTRACT_ADDRESS = "0x390927068c8970d7A3D0C996DA4f1C432CD85F60"
+export const SUBFLOW_CONTRACT_ADDRESS = "0x8a5721De53839B01399fC06C65CFFF275369E804"
 export const SUBFLOW_ABI = [
   {
     "inputs": [
@@ -131,12 +131,150 @@ export const SUBFLOW_ABI = [
         "type": "uint256"
       }
     ],
-    "name": "getServiceAddressNyId",
+    "name": "getServiceAddressById",
     "outputs": [
       {
         "internalType": "address",
         "name": "",
         "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_service",
+        "type": "address"
+      }
+    ],
+    "name": "getServiceByAddress",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "id",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "uri",
+            "type": "string"
+          },
+          {
+            "internalType": "address",
+            "name": "owner",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "service",
+            "type": "address"
+          }
+        ],
+        "internalType": "struct Subflow.ServiceList",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_serviceId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getServiceById",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "id",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "uri",
+            "type": "string"
+          },
+          {
+            "internalType": "address",
+            "name": "owner",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "service",
+            "type": "address"
+          }
+        ],
+        "internalType": "struct Subflow.ServiceList",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "_name",
+        "type": "string"
+      }
+    ],
+    "name": "getServiceByName",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "id",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "uri",
+            "type": "string"
+          },
+          {
+            "internalType": "address",
+            "name": "owner",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "service",
+            "type": "address"
+          }
+        ],
+        "internalType": "struct Subflow.ServiceList",
+        "name": "",
+        "type": "tuple"
       }
     ],
     "stateMutability": "view",
@@ -233,25 +371,6 @@ export const SUBFLOW_ABI = [
         "internalType": "address",
         "name": "service",
         "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_s",
-        "type": "address"
-      }
-    ],
-    "name": "testLoop",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
       }
     ],
     "stateMutability": "view",
@@ -369,6 +488,11 @@ export const SERVICE_ABI = [
         "components": [
           {
             "internalType": "uint256",
+            "name": "id",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
             "name": "interval",
             "type": "uint256"
           },
@@ -394,7 +518,7 @@ export const SERVICE_ABI = [
         "type": "address"
       }
     ],
-    "name": "getUser",
+    "name": "getUserByAddress",
     "outputs": [
       {
         "components": [
@@ -410,6 +534,11 @@ export const SERVICE_ABI = [
           },
           {
             "components": [
+              {
+                "internalType": "uint256",
+                "name": "id",
+                "type": "uint256"
+              },
               {
                 "internalType": "uint256",
                 "name": "interval",
@@ -447,7 +576,7 @@ export const SERVICE_ABI = [
         "type": "uint256"
       }
     ],
-    "name": "getUser",
+    "name": "getUserById",
     "outputs": [
       {
         "components": [
@@ -463,6 +592,11 @@ export const SERVICE_ABI = [
           },
           {
             "components": [
+              {
+                "internalType": "uint256",
+                "name": "id",
+                "type": "uint256"
+              },
               {
                 "internalType": "uint256",
                 "name": "interval",
