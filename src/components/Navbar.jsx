@@ -23,7 +23,6 @@ export default function Navbar()
 {
   //const [colorScheme, setTheme] = DarkMode();
 
-  //o-laj
     // When the user scrolls down 100px from the top of the document, show the button
     let nav = document.getElementById("navbarBig");
     
