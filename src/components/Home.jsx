@@ -3,6 +3,7 @@ import {Link} from 'react-router-dom'
 import Footer from './Footer';
 import Loader from './Loader';
 import Navbar from './Navbar';
+import "./css/Home.css"
 import {Helmet} from "react-helmet";
 
 
@@ -12,9 +13,10 @@ import "aos/dist/aos.css";
 
 function Home() 
 {
+  
   function loader() 
   {
-    var load_timeout = setTimeout(showPage, 6000);
+    var load_timeout = setTimeout(showPage, 500);
   }
   
   function showPage() 
@@ -82,8 +84,8 @@ function Home()
                     </div>
                     <div>
                     <article>
-                    <h2 className='text-xl font-semibold pb-2'>Censorship free</h2>
-                      <p className='text-sm text-small font-light'>You own your own contracts. Your information is publicly verifiable and cannot be modified by us outside set boundaries.</p>
+                    <h2 className='text-xl font-semibold pb-2'>No Censorship</h2>
+                      <p className='text-sm text-small font-light'>You completely own your service contracts</p>
                     </article>
                     </div>
                 </figure>
@@ -98,7 +100,7 @@ function Home()
                     <div>
                     <article>
                     <h2 className='text-xl font-semibold pb-2'>Fully Decentralized</h2>
-                      <p className='text-sm text-small font-light'>Decentralized storage of assets(Arweave). Blockchain as a store of data.</p>
+                      <p className='text-sm text-small font-light'>All state and assets are stored on Polygon and Arweave.</p>
                     </article>
                     </div>
                 </figure>
@@ -113,7 +115,7 @@ function Home()
                     <div>
                     <article>
                     <h2 className='text-xl font-semibold pb-2'>Secure</h2>
-                      <p className='text-sm text-small font-light'>Iterative audits are regularly carried out to rid the subflow contract of vulnrabilities.</p>
+                      <p className='text-sm text-small font-light'>Audits are carried out iteratively at intervals.</p>
                     </article>
                     </div>
                 </figure>
